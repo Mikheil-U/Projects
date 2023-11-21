@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 {% extends 'movies_app/base.html' %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/login_page.css' %}">
+
 {% block content %}
-<h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        {% if error %}
-            <p style="color: red;">{{ error }}</p>
-        {% endif %}
-        <button type="submit">Login</button>
-    </form>
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            <button type="submit">Login</button>
+        </form>
+    </div>
 {% endblock %}

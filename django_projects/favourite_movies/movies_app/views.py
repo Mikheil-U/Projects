@@ -1,4 +1,9 @@
+from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from .models import Movie
@@ -7,6 +12,17 @@ from .models import Movie
 def index(request):
 
     return render(request, 'movies_app/base.html', {'movies': Movie.objects.all()})
+
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('index'))
+
+
+def user_login(request):
+    if request.method == "POST":
+        pass
 
 
 def login_user(request):
