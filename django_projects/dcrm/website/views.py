@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import SignUpForm
+from .forms import SignUpForm, AddRecordForm
 from . models import Record
 
 
@@ -62,9 +62,46 @@ def customer_record(request, pk: int):
         return redirect('home')
 
 
+def delete_record(request, pk: int):
+    if request.user.is_authenticated:
+        del_record = Record.objects.get(id=pk)
+        del_record.delete()
+        messages.success(request, 'Record has successfully been deleted.')
+        return redirect('home')
+    else:
+        messages.success(request, 'You must be logged in to do that.')
+        return redirect('home')
 
 
+def add_record(request):
+    form = AddRecordForm(request.POST or None)
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            if form.is_valid():
+                new_record = form.save()
+                messages.success(request, "Record Added...")
+                return redirect('home')
+            else:
+                messages.success(request, 'The form is invalid, please make sure to input the correct data.')
+        return render(request, 'website/add_record.html', {'form': form})
+    else:
+        messages.success(request, 'You must be logged in to do that.')
+        return redirect('home')
 
+
+def update_record(request, pk: int):
+    if request.user.is_authenticated:
+        current_record = Record.objects.get(id=pk)
+        # We use instance=current_record to keep the original data and keep the fields occupied with the original data,
+        # So user don't need to re-enter all the information when they're only updating one field.
+        form = AddRecordForm(request.POST or None, instance=current_record)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Record Updated.")
+            return redirect('home')
+        return render(request, 'website/update_record.html', {'form': form})
+    else:
+        messages.success(request, 'The form is invalid, please make sure to input the correct data.')
 
 
 
